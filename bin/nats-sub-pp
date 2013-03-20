@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+require 'logger'
+
+require 'coderay'
+require 'nats/client'
+
+require 'nats_sub_pp'
+
+server, sub = ARGV
+
+unless server && sub
+  puts 'Usage: nats-sub-pp nats_server_uri sub'
+  exit 1
+end
+
+if server == 'bosh'
+  manifest = NatsSubPp.bosh_deployment
+  puts "Reading nats server from #{manifest}"
+  server = NatsSubPp.bosh_nats_uri(manifest)
+end
+
+logger = Logger.new($stdout)
+
+logger.formatter = proc do |_, datetime, _, msg|
+  "#{datetime.strftime('%Y-%m-%d %H:%M:%S.%L')} #{msg}\n"
+end
+
+puts "Listening to #{sub} at #{server}"
+
+NATS.start(:uri => server, :autostart => true) do
+  duo = CodeRay::Duo[:json => :term]
+
+  NATS.subscribe(sub) do |msg, _, topic|
+    msg_parsed = begin
+      JSON.pretty_generate(JSON.parse(msg))
+    rescue JSON::ParserError
+      msg
+    end
+    topic_decorated = duo.highlight "\"#{topic}\""
+    logger.info "#{topic_decorated}\n#{duo.highlight(msg_parsed)}"
+  end
+end
