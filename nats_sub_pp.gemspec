@@ -11,9 +11,9 @@ Gem::Specification.new do |s|
   s.authors = ['Matthew M. Boedicker']
   s.email = %w{matthewm@boedicker.org}
 
-  s.add_dependency 'bosh_cli'
+  s.add_dependency 'bosh_cli', '~> 1.0.3'
   s.add_dependency 'coderay'
-  s.add_dependency 'nats'
+  s.add_dependency 'nats', '= 0.4.22'
 
   s.files = `git ls-files`.split("\n")
   s.executables = %w{nats-sub-pp}
