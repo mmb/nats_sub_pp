@@ -41,6 +41,6 @@ NATS.start(:uri => server, :autostart => true) do
       msg
     end
     topic_decorated = duo.highlight "\"#{topic}\" #{topic_counter[topic]}"
-    logger.info "#{topic_decorated}\n#{duo.highlight(msg_parsed)}"
+    logger.info "#{topic_decorated}\n#{duo.highlight(msg_parsed)}\n"
   end
 end
