@@ -11,7 +11,7 @@ module NatsSubPp
 
   def bosh_nats_uri(manifest_path)
     yaml = YAML.load_file(manifest_path)
-    props = yaml['properties']['nats2'] || yaml['properties']['nats']
+    props = yaml['properties']['nats']
     URI::Generic.build(
         :scheme => 'nats',
         :userinfo => "#{props['user']}:#{props['password']}",
