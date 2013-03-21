@@ -31,13 +31,16 @@ puts "Listening to #{sub} at #{server}"
 NATS.start(:uri => server, :autostart => true) do
   duo = CodeRay::Duo[:json => :term]
 
+  topic_counter = {}
+
   NATS.subscribe(sub) do |msg, _, topic|
+    topic_counter[topic] = topic_counter.fetch(topic, 0) + 1
     msg_parsed = begin
       JSON.pretty_generate(JSON.parse(msg))
     rescue JSON::ParserError
       msg
     end
-    topic_decorated = duo.highlight "\"#{topic}\""
+    topic_decorated = duo.highlight "\"#{topic}\" #{topic_counter[topic]}"
     logger.info "#{topic_decorated}\n#{duo.highlight(msg_parsed)}"
   end
 end
